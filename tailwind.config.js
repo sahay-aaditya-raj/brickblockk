@@ -12,6 +12,7 @@ module.exports = {
         'secondary':"#00ff00",
         'tertiary':"#0000ff",
         'background':"#000000",
+        'error':"#fff000"
       }
     },
   },

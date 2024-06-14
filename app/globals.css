@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-input {
-  @apply border-2 border-gray-300 rounded-lg p-2;
+input:focus {
+  outline: none;
 }

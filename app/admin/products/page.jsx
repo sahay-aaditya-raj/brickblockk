@@ -1,9 +1,9 @@
 "use client"
 import Layout from "@/components/Admin/Layout"
-export default function Admin(){
+export default function Product(){
     return(
         <Layout>
-            <div>Admin</div>
+            <div>Product</div>
         </Layout>
     )
 }
