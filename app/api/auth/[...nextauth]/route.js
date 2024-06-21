@@ -13,7 +13,6 @@ const authOptions = {
         // Logic to look up the user from the credentials supplied
         await connectMongoDB();
         const user = await User.findOne({ uname: credentials.username });
-        
         if (!user) {
           return null;
         }

@@ -9,7 +9,7 @@ export default function Layout({children}){
     console.log(session)
     if(status==="loading"){
         return(
-            <div className={'p-5 font-bold'}>Loading...</div>
+            <div className={'p-5 font-bold text-3xl'}>Loading...</div>
         )
     }
     if(status === "authenticated"){
