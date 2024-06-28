@@ -3,7 +3,7 @@ import { useState } from "react"
 import closepng from "./close.png"
 import Image from "next/image"
 import { useSession } from "next-auth/react";
-
+import Loading from "@/components/Admin/Loading";
 
 function NewInput({ placeholder, value, onChange, type, name, id }) {
     return (
@@ -29,13 +29,15 @@ export default function NewProduct() {
     const [price, setPrice] = useState('')
     const [err, setErr] = useState('')
     const { data: session, status } = useSession();
+    const [loading, setLoading] = useState(false)
+
     async function handleForm(e) {
         e.preventDefault()
         if (!name) { setErr('Name must be Provided !'); return }
         if (!desc) { setErr('Description must be Provided !'); return }
         if (!price) { setErr('Price must be Provided !'); return }
         if (Number.isNaN(parseFloat(price))) { setErr('Price must be a number !'); return }
-
+        setLoading(true)
         const res = await fetch('/api/new-product', {
             method: 'POST',
             body: JSON.stringify({ name, price, desc }),
@@ -45,7 +47,13 @@ export default function NewProduct() {
             }
         })
         const data = await res.json()
-        console.log(data)
+        setLoading(false)
+        if(res.status == 201){
+            alert("Added Successfully !")
+            setDesc(''); setName(''); setPrice('');
+        } else {
+            alert(`Not Added, ${data.message}`)
+        }
     }
     return (
         <form className={'flex flex-col lg:w-1/2'} onSubmit={handleForm}>
@@ -53,7 +61,7 @@ export default function NewProduct() {
             <NewInput placeholder={'Product Name'} type={'text'} name={'product'} id={'product'}
                 value={name}
                 onChange={(e) => setName(e.target.value)} />
-            <NewInput placeholder={'Price'} type={'text'} name={'price'} id={'price'}
+            <NewInput placeholder={'Price (INR)'} type={'text'} name={'price'} id={'price'}
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
             />
@@ -83,6 +91,7 @@ export default function NewProduct() {
                 </div>
             }
             <button className={'bg-primary rounded-md my-2 p-2 text-white text-[15px] shadow-lg hover:bg-primaryHover'} value="Submit" type="Submit">Add Product</button>
+            {loading && <Loading/>}
         </form>
     )
 }
