@@ -38,7 +38,7 @@ export default function NewProduct() {
         if (!price) { setErr('Price must be Provided !'); return }
         if (Number.isNaN(parseFloat(price))) { setErr('Price must be a number !'); return }
         setLoading(true)
-        const res = await fetch('/api/new-product', {
+        const res = await fetch('/api/products', {
             method: 'POST',
             body: JSON.stringify({ name, price, desc }),
             headers: {
