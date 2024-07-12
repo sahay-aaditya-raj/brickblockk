@@ -13,7 +13,6 @@ export default function Product(){
         const data = await res.json()
         if(res.status === 200){
             setProducts(data.data)
-            console.log(data.data)
             setLoading(false)
         } else {
             setLoading(false)
@@ -23,6 +22,11 @@ export default function Product(){
     useEffect(()=>{
         getAll()
     },[])
+    async function deleteButton(id){
+        const res = await fetch(`/api/products`,{
+            method: "DELETE"
+        })
+    }
     return(
         <div className={'w-full flex flex-col'}>
             <div className="mb-3 mt-3">
@@ -56,7 +60,7 @@ export default function Product(){
                                 {product.desc}
                             </div>
                             <div className={'flex flex-row justify-end flex-grow'}>
-                                <Link href="#" className={'bg-primary hover:bg-primaryHover px-4 text-white rounded-md mx-2'}>Edit</Link>
+                                <Link href={`/admin/products/${product._id}`} className={'bg-primary hover:bg-primaryHover px-4 text-white rounded-md mx-2'}>Edit</Link>
                                 <Link href="#" className={'bg-primary hover:bg-primaryHover px-2 text-white rounded-md mx-2'}>Delete</Link>
                             </div>
                         </div>

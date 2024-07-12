@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import closepng from "./close.png"
+import closepng from "../close.png"
 import Image from "next/image"
 import { useSession } from "next-auth/react";
 import Loading from "@/components/Admin/Loading";
