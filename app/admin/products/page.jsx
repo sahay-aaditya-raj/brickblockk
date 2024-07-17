@@ -1,11 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import React,{ useState, useEffect } from "react"
 import Loading from "@/components/Admin/Loading"
+import { withSwal } from 'react-sweetalert2';
+import { useSession } from "next-auth/react";
 
-export default function Product(){
+function Product({swal}){
     const [loading, setLoading] = useState(true)
     const [products, setProducts] = useState([])
+    const { data: session, status } = useSession();
     async function getAll(){
         const res = await fetch("/api/products",{
             method: "GET",
@@ -16,16 +20,61 @@ export default function Product(){
             setLoading(false)
         } else {
             setLoading(false)
-            alert(data.message)
+            sweetAlert(data.message)
         }
     }
     useEffect(()=>{
         getAll()
     },[])
-    async function deleteButton(id){
-        const res = await fetch(`/api/products`,{
-            method: "DELETE"
-        })
+
+    function sweetAlert(message){
+        swal.fire({
+            title: 'Oops! Something went wrong',
+            text: `${message}`,
+            confirmButtonText: "Close !",
+            confirmButtonColor:"red",
+            didOpen: () => {
+            },
+            didClose: () => {
+            },
+        }).then(result => {
+            // when confirmed and promise resolved...
+        }).catch(error => {
+            // when promise rejected...
+        });
+    }
+    function deleteButton(id,name){
+        swal.fire({
+            text:`Are you Sure want to Delete ${name} ?`,
+            confirmButtonText:`Yes`,
+            confirmButtonColor:`#cc1111`,
+            showCancelButton:true,
+            cancelButtonText:`No`,
+            cancelButtonColor:`#01bb15`,
+            allowEscapeKey:true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                async function deleteEntry(){
+                    const res = await fetch(`/api/products`,{
+                        method: "DELETE",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': session.user.id
+                        },
+                        body:JSON.stringify({ id })
+                    })
+                    if (res.status === 200){
+                        swal.fire({
+                            title:"Deleted Successfully !",
+                            timer: 5000,
+                            icon:'success'
+                        })
+                        getAll()
+                    }
+                }
+                deleteEntry()
+            }
+          });
     }
     return(
         <div className={'w-full flex flex-col'}>
@@ -61,7 +110,7 @@ export default function Product(){
                             </div>
                             <div className={'flex flex-row justify-end flex-grow'}>
                                 <Link href={`/admin/products/${product._id}`} className={'bg-primary hover:bg-primaryHover px-4 text-white rounded-md mx-2'}>Edit</Link>
-                                <Link href="#" className={'bg-primary hover:bg-primaryHover px-2 text-white rounded-md mx-2'}>Delete</Link>
+                                <button onClick={()=>deleteButton(product._id, product.name)} className={'bg-primary hover:bg-primaryHover px-2 text-white rounded-md mx-2'}>Delete</button>
                             </div>
                         </div>
                     ))}
@@ -71,3 +120,7 @@ export default function Product(){
         </div>
     )
 }
+
+export default withSwal(({swal}, ref)=>(
+    <Product swal={swal} />
+))

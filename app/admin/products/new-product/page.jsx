@@ -4,6 +4,8 @@ import closepng from "../close.png"
 import Image from "next/image"
 import { useSession } from "next-auth/react";
 import Loading from "@/components/Admin/Loading";
+import { withSwal } from 'react-sweetalert2';
+import { useRouter } from "next/navigation";
 
 function NewInput({ placeholder, value, onChange, type, name, id }) {
     return (
@@ -23,13 +25,14 @@ function NewInput({ placeholder, value, onChange, type, name, id }) {
     )
 }
 
-export default function NewProduct() {
+function NewProduct({swal}) {
     const [name, setName] = useState('')
     const [desc, setDesc] = useState('')
     const [price, setPrice] = useState('')
     const [err, setErr] = useState('')
     const { data: session, status } = useSession();
     const [loading, setLoading] = useState(false)
+    const router = useRouter()
 
     async function handleForm(e) {
         e.preventDefault()
@@ -49,10 +52,27 @@ export default function NewProduct() {
         const data = await res.json()
         setLoading(false)
         if(res.status == 201){
-            alert("Added Successfully !")
+            swal.fire({
+                title: "Added Successfully !",
+                icon: "success",
+                showCancelButton: true,
+                showCloseButton: true,
+                cancelButtonText: "Close",
+                confirmButtonText: "Go to Products",
+                timer: 5000,
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    router.push('/admin/products')
+                }
+            })
             setDesc(''); setName(''); setPrice('');
         } else {
-            alert(`Not Added, ${data.message}`)
+            swal.fire({
+                title:"Error, Not Added",
+                text:`${data.message}`,
+                icon:"error",
+                timer:5000
+            })
         }
     }
     return (
@@ -95,3 +115,7 @@ export default function NewProduct() {
         </form>
     )
 }
+
+export default withSwal(({swal}, ref)=>(
+    <NewProduct swal={swal} />
+))

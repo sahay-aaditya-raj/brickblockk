@@ -69,3 +69,24 @@ export async function PUT(req) {
         return NextResponse.json({ message: "Unable to Reach Server" }, { status: 500 });
     }
 }
+
+export async function DELETE(req){
+    try{
+        const userId = req.headers.get('Authorization');
+        if (userId) {
+            await connectMongoDB();
+            const user = await User.findById(userId);
+            if (!user) {
+                return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+            }
+            const { id } = await req.json();
+            await Product.findByIdAndDelete(id);
+            return NextResponse.json({ message: "Deleted Successfully" }, { status: 200 });
+        } else {
+            return NextResponse.json({ message: "No header is provided" }, { status: 401 });
+        }
+    } catch (error){
+        console.error(error);
+        return NextResponse.json({ message: "Unable to Reach Server" }, { status: 500 });
+    }
+}
