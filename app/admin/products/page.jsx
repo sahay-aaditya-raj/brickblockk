@@ -7,10 +7,11 @@ import { withSwal } from 'react-sweetalert2';
 import { useSession } from "next-auth/react";
 
 function Product({swal}){
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [products, setProducts] = useState([])
     const { data: session, status } = useSession();
     async function getAll(){
+        setLoading(true)
         const res = await fetch("/api/products",{
             method: "GET",
         })
